@@ -28,34 +28,41 @@ class SimpsonListActivity : AppCompatActivity() {
 
         binding = ActivitySimpsonListBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        viewModel = ViewModelProvider(this, SimpsonListVMFactory())
+            .get(SimpsonListViewModel::class.java)
 
-        binding.rvSimpsons.layoutManager = LinearLayoutManager(this)
-        binding.rvSimpsons.adapter = SimpsonAdapter(emptyList())
+        setupRecycler()
+        observeUi()
 
-        viewModel = ViewModelProvider(this, SimpsonListVMFactory())[SimpsonListViewModel::class.java]
+        viewModel.loadAllSimpson()
+    }
 
-        // Estado UI
+    private fun setupRecycler() = with(binding) {
+        rvSimpsons.layoutManager = LinearLayoutManager(this@SimpsonListActivity)
+    }
+
+    private fun observeUi() {
         viewModel.uiState.observe(this) { state ->
+            // loading
             binding.pbLoading.visibility = if (state.isLoading) View.VISIBLE else View.GONE
-
+            // error
             if (state.error != null) {
                 binding.tvError.visibility = View.VISIBLE
                 binding.tvError.text = state.error
                 binding.rvSimpsons.visibility = View.GONE
             } else {
                 binding.tvError.visibility = View.GONE
-                // Si hay datos, recreamos el adapter PASANDO LA LISTA POR PARÁMETRO
-                if (state.Simpson.isNotEmpty()) {
-                    binding.rvSimpsons.adapter = SimpsonAdapter(simpsonList = state.Simpson)
-                    binding.rvSimpsons.visibility = View.VISIBLE
-                }
+            }
+            // list
+            if (state.simpson.isNotEmpty()) {
+                binding.rvSimpsons.visibility = View.VISIBLE
+                binding.rvSimpsons.adapter = SimpsonAdapter(state.simpson)
             }
         }
-
-        // Dispara carga
-        viewModel.loadAllSimpson()
     }
 }
+
+
 private class SimpsonListVMFactory : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {

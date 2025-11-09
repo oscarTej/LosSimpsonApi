@@ -5,5 +5,5 @@ data class SimpsonApiModel (
     val name: String,
     val occupation: String,
     val phrases: List<String>,
-    val imageUrl: String
+    val portrait_path: String
 )

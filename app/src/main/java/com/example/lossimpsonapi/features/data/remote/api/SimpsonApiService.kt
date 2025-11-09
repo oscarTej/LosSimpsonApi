@@ -6,5 +6,5 @@ import retrofit2.http.GET
 interface SimpsonApiService {
     @GET("characters")
 
-    suspend fun getAllSimpson():Response<List<SimpsonApiModel>>
+    suspend fun getAllSimpson():Response<CharactersResponse>
 }

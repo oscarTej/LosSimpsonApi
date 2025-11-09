@@ -24,7 +24,7 @@ class SimpsonListViewModel(val getAllSimpsonUseCase: GetAllSimpsonUseCase) : Vie
                         SimpsonUiState(
                             isLoading = false,
                             error = null,
-                            Simpson = lista
+                            simpson = lista
                         )
                     )
                 }, onFailure = { throwable ->
@@ -33,7 +33,7 @@ class SimpsonListViewModel(val getAllSimpsonUseCase: GetAllSimpsonUseCase) : Vie
                         SimpsonUiState(
                             isLoading = false,
                             error = message,
-                            Simpson = emptyList()
+                            simpson = emptyList()
                         )
                     )
 
