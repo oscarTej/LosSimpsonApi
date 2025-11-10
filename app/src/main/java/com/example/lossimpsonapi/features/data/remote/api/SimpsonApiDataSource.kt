@@ -14,7 +14,7 @@ class SimpsonApiDataSource (private val apiClient: ApiClient) {
             val response = apiService.getAllSimpson()
             if(response.isSuccessful){
                 val body = response.body()
-                val list = body?.items
+                val list = body?.results
                 if(list != null){
                     val listSimpson = list.map { it.toModel() }
                     Result.success(listSimpson)
