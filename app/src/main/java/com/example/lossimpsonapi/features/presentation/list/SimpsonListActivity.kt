@@ -14,6 +14,8 @@ import com.example.lossimpsonapi.features.data.remote.api.SimpsonApiDataSource
 import com.example.lossimpsonapi.features.domain.GetAllSimpsonUseCase
 import com.example.lossimpsonapi.features.domain.Simpson
 import com.example.lossimpsonapi.features.presentation.adapter.SimpsonAdapter
+import com.example.lossimpsonapi.features.presentation.factory.SimpsonListVMFactory
+import com.example.lossimpsonapi.features.presentation.observer.SimpsonListObserver
 
 
 class SimpsonListActivity : AppCompatActivity() {
@@ -32,7 +34,8 @@ class SimpsonListActivity : AppCompatActivity() {
             .get(SimpsonListViewModel::class.java)
 
         setupRecycler()
-        observeUi()
+         val observer = SimpsonListObserver(binding)
+        observer.observeUi(this, viewModel)
 
         viewModel.loadAllSimpson()
     }
@@ -41,38 +44,12 @@ class SimpsonListActivity : AppCompatActivity() {
         rvSimpsons.layoutManager = LinearLayoutManager(this@SimpsonListActivity)
     }
 
-    private fun observeUi() {
-        viewModel.uiState.observe(this) { state ->
-            // loading
-            binding.pbLoading.visibility = if (state.isLoading) View.VISIBLE else View.GONE
-            // error
-            if (state.error != null) {
-                binding.tvError.visibility = View.VISIBLE
-                binding.tvError.text = state.error
-                binding.rvSimpsons.visibility = View.GONE
-            } else {
-                binding.tvError.visibility = View.GONE
-            }
-            // list
-            if (state.simpson.isNotEmpty()) {
-                binding.rvSimpsons.visibility = View.VISIBLE
-                binding.rvSimpsons.adapter = SimpsonAdapter(state.simpson)
-            }
-        }
-    }
+
 }
 
 
-private class SimpsonListVMFactory : ViewModelProvider.Factory {
-    @Suppress("UNCHECKED_CAST")
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        val apiClient = ApiClient()
-        val dataSource = SimpsonApiDataSource(apiClient)
-        val repository = SimpsonDataRepository(dataSource)
-        val useCase = GetAllSimpsonUseCase(repository)
-        return SimpsonListViewModel(useCase) as T
-    }
-}
+
+
 
 
 
